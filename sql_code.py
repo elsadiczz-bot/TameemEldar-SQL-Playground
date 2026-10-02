@@ -301,29 +301,25 @@ class SQLPlaygroundApp:
     def __init__(self):
         st.set_page_config(
             page_title="TameemEldar SQL Playground Pro",
-            page_icon="logo_full.png.png",  # ← الشعار
+            page_icon="logo_full.png",  # ← الشعار
             layout="wide"
         )
         
-        self.db = self._get_db()
+        self.db = DatabaseManager()
         self.lessons = LessonManager()
         self.challenges = ChallengeManager()
     
-    @staticmethod
-    @st.cache_resource
-    def _get_db():
-        return DatabaseManager()
     
     # ─── عناصر مشتركة ───
     @staticmethod
-    @staticmethod
+    
     def render_title():
         """عنوان التطبيق — مع الشعار"""
         col1, col2 = st.columns([1, 6])
     
         with col1:
             try:
-                st.image("log_icon.png.png", width=100)
+                st.image("logo_icon.png", width=100)
             except:
                 st.markdown("# 🎓")
     
