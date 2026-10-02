@@ -1,0 +1,30 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backups
+backups/
+
+# Data (حساس)
+data/
+*.xlsx
+*.csv
+!book_content/*.md
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.log
