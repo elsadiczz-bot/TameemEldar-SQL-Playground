@@ -305,14 +305,23 @@ class SQLPlaygroundApp:
             layout="wide"
         )
         
-        self.db = DatabaseManager()
+        self.db = self._get_db()
         self.lessons = LessonManager()
         self.challenges = ChallengeManager()
     
+    @staticmethod
+    @st.cache_resource
+    def _get_db():
+        """قاعدة البيانات — محفوظة + إعادة إنشاء تلقائية"""
+        db = DatabaseManager()
+        # 🆕 تأكد من الجداول
+        db._init_default_tables()
+        return db
+
     
     # ─── عناصر مشتركة ───
     @staticmethod
-    
+    @staticmethod
     def render_title():
         """عنوان التطبيق — مع الشعار"""
         col1, col2 = st.columns([1, 6])
@@ -627,13 +636,31 @@ class SQLPlaygroundApp:
         with tab5:
             st.header("📊 البيانات التدريبية")
             st.markdown("**بيانات جاهزة للتعلّم**")
-                    
-            table = st.selectbox("اختر جدولاً:", ["patients", "medications"])
+    
+            # 🆕 تأكد من وجود الجداول
+            try:
+                available = self.db.list_all_tables()
+                if "patients" not in available or "medications" not in available:
+                    self.db._init_default_tables()
+                    available = self.db.list_all_tables()
+            except:
+                self.db._init_default_tables()
+                available = self.db.list_all_tables()
+    
+            # 🆕 اختر فقط الجداول الموجودة
+            train_tables = [t for t in ["patients", "medications"] if t in available]
+    
+            if not train_tables:
+                st.warning("⚠️ الجداول التدريبية غير متوفرة")
+                return
+    
+            table = st.selectbox("اختر جدولاً:", train_tables)
             df = self.db.get_table(table)
-                    
+    
             st.markdown(f"### 📋 {table}")
             st.markdown(f"**الصفوف:** {len(df)} | **الأعمدة:** {len(df.columns)}")
             st.dataframe(df, use_container_width=True)
+
         with tab6:
             self.render_book_tab() 
        
